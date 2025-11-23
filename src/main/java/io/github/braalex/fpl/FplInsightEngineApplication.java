@@ -1,0 +1,13 @@
+package io.github.braalex.fpl;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class FplInsightEngineApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(FplInsightEngineApplication.class, args);
+	}
+
+}
