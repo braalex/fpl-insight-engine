@@ -1,0 +1,4 @@
+fpl:
+  api:
+    url: https://fantasy.premierleague.com/api
+    timeout: 5000
