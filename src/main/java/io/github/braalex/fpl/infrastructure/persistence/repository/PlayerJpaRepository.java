@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface PlayerJpaRepository extends JpaRepository<PlayerEntity, Integer> {
     List<PlayerEntity> findByTeamId(Integer teamId);
+    List<PlayerEntity> findTop10ByOrderByTotalPointsDesc();
 }

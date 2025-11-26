@@ -1,6 +1,6 @@
 package io.github.braalex.fpl.application.controller;
 
-import io.github.braalex.fpl.infrastructure.persistence.entity.PlayerEntity;
+import io.github.braalex.fpl.application.dto.PlayerResponse;
 import io.github.braalex.fpl.infrastructure.persistence.repository.PlayerJpaRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,18 +20,30 @@ public class PlayerController {
     }
 
     @GetMapping
-    public List<PlayerEntity> getAllPlayers() {
-        return playerRepository.findAll();
+    public List<PlayerResponse> getAllPlayers() {
+        return playerRepository.findAll().stream()
+                .map(PlayerResponse::from)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public PlayerEntity getPlayerById(@PathVariable Integer id) {
-        return playerRepository.findById(id).orElseThrow();
+    public PlayerResponse getPlayerById(@PathVariable Integer id) {
+        return playerRepository.findById(id)
+                .map(PlayerResponse::from)
+                .orElseThrow();
     }
 
     @GetMapping("/team/{teamId}")
-    public List<PlayerEntity> getPlayersByTeam(@PathVariable Integer teamId) {
-        return playerRepository.findByTeamId(teamId);
+    public List<PlayerResponse> getPlayersByTeam(@PathVariable Integer teamId) {
+        return playerRepository.findByTeamId(teamId).stream()
+                .map(PlayerResponse::from)
+                .toList();
     }
 
+    @GetMapping("/top")
+    public List<PlayerResponse> getTop10Players() {
+        return playerRepository.findTop10ByOrderByTotalPointsDesc().stream()
+                .map(PlayerResponse::from)
+                .toList();
+    }
 }

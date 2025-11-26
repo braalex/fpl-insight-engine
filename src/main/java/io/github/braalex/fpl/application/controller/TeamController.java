@@ -1,6 +1,6 @@
 package io.github.braalex.fpl.application.controller;
 
-import io.github.braalex.fpl.infrastructure.persistence.entity.TeamEntity;
+import io.github.braalex.fpl.application.dto.TeamResponse;
 import io.github.braalex.fpl.infrastructure.persistence.repository.TeamJpaRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,12 +20,16 @@ public class TeamController {
     }
 
     @GetMapping
-    public List<TeamEntity> getAllTeams() {
-        return teamRepository.findAll();
+    public List<TeamResponse> getAllTeams() {
+        return teamRepository.findAll().stream()
+                .map(TeamResponse::from)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public TeamEntity getTeamById(@PathVariable Integer id) {
-        return teamRepository.findById(id).orElseThrow();
+    public TeamResponse getTeamById(@PathVariable Integer id) {
+        return teamRepository.findById(id)
+                .map(TeamResponse::from)
+                .orElseThrow();
     }
 }
