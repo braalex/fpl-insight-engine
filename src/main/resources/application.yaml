@@ -18,3 +18,15 @@ fpl:
   api:
     url: https://fantasy.premierleague.com/api
     timeout: 5000
+
+logging:
+  structured:
+    format:
+      file: ecs
+    ecs:
+      service-name: fpl-insight-engine
+  file:
+    name: logs/app.json
+  level:
+    root: INFO
+    io.github.braalex.fpl: DEBUG
