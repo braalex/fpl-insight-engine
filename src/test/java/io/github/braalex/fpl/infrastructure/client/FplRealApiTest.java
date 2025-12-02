@@ -1,23 +1,13 @@
 package io.github.braalex.fpl.infrastructure.client;
 
+import io.github.braalex.fpl.AbstractIntegrationTest;
 import io.github.braalex.fpl.domain.ports.FplDataProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@EnableAutoConfiguration(exclude = {
-        DataSourceAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class,
-        HibernateJpaAutoConfiguration.class
-})
-public class FplRealApiTest {
+public class FplRealApiTest extends AbstractIntegrationTest {
 
     @Autowired
     private FplDataProvider fplDataProvider;
