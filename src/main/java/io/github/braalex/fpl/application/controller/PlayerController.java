@@ -1,6 +1,7 @@
 package io.github.braalex.fpl.application.controller;
 
 import io.github.braalex.fpl.application.dto.PlayerResponse;
+import io.github.braalex.fpl.application.dto.UndervaluedPlayerResponse;
 import io.github.braalex.fpl.infrastructure.persistence.repository.PlayerJpaRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,13 @@ public class PlayerController {
     public List<PlayerResponse> getTop10Players() {
         return playerRepository.findTop10ByOrderByTotalPointsDesc().stream()
                 .map(PlayerResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/undervalued")
+    public List<UndervaluedPlayerResponse> getUndervaluedPlayers() {
+        return playerRepository.findUndervaluedPlayers(300).stream()
+                .map(UndervaluedPlayerResponse::from)
                 .toList();
     }
 }
