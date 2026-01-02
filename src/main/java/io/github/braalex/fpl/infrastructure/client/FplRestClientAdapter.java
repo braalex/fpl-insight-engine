@@ -1,13 +1,17 @@
 package io.github.braalex.fpl.infrastructure.client;
 
+import io.github.braalex.fpl.domain.model.Fixture;
 import io.github.braalex.fpl.domain.model.Player;
 import io.github.braalex.fpl.domain.model.Team;
 import io.github.braalex.fpl.domain.ports.FplDataProvider;
 import io.github.braalex.fpl.infrastructure.client.FplApiDto.BootstrapStaticResponse;
+import io.github.braalex.fpl.infrastructure.client.FplApiDto.FixtureDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -57,5 +61,25 @@ public class FplRestClientAdapter implements FplDataProvider {
                         p.news()
                 ))
                 .toList();
+    }
+
+    @Override
+    public List<Fixture> fetchFixtures() {
+        FixtureDto[] dtos = restClient.get()
+                .uri("/fixtures/")
+                .retrieve()
+                .body(FixtureDto[].class);
+
+        return Arrays.stream(dtos).map(dto -> new Fixture(
+                dto.id(),
+                dto.event(),
+                dto.team_h(),
+                dto.team_a(),
+                dto.team_h_difficulty(),
+                dto.team_a_difficulty(),
+                dto.kickoff_time() != null ? LocalDateTime.parse(dto.kickoff_time().replace("Z", "")) : null,
+                dto.finished()
+        ))
+        .toList();
     }
 }

@@ -9,7 +9,8 @@ public class FplApiDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     record BootstrapStaticResponse(
             List<TeamDto> teams,
-            List<PlayerDto> elements  // FPL calls players "elements"
+            List<PlayerDto> elements,  // FPL calls players "elements"
+            List<FixtureDto> fixtures
     ) {
     }
 
@@ -41,6 +42,19 @@ public class FplApiDto {
             int clean_sheets,
             String status,
             String news
+    ) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    record FixtureDto(
+            int id,
+            Integer event,
+            int team_h,
+            int team_a,
+            int team_h_difficulty,
+            int team_a_difficulty,
+            String kickoff_time,
+            boolean finished
     ) {
     }
 }

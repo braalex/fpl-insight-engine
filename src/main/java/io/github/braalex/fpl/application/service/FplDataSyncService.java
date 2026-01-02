@@ -1,6 +1,7 @@
 package io.github.braalex.fpl.application.service;
 
 import io.github.braalex.fpl.domain.ports.FplDataProvider;
+import io.github.braalex.fpl.infrastructure.persistence.adapter.PostgresFixtureAdapter;
 import io.github.braalex.fpl.infrastructure.persistence.adapter.PostgresPlayerAdapter;
 import io.github.braalex.fpl.infrastructure.persistence.adapter.PostgresTeamAdapter;
 import org.slf4j.Logger;
@@ -18,13 +19,16 @@ public class FplDataSyncService {
     private final FplDataProvider fplApiClient;
     private final PostgresTeamAdapter postgresTeamAdapter;
     private final PostgresPlayerAdapter postgresPlayerAdapter;
+    private final PostgresFixtureAdapter postgresFixtureAdapter;
 
     public FplDataSyncService(FplDataProvider fplApiClient,
                               PostgresTeamAdapter postgresTeamAdapter,
-                              PostgresPlayerAdapter postgresPlayerAdapter) {
+                              PostgresPlayerAdapter postgresPlayerAdapter,
+                              PostgresFixtureAdapter postgresFixtureAdapter) {
         this.fplApiClient = fplApiClient;
         this.postgresTeamAdapter = postgresTeamAdapter;
         this.postgresPlayerAdapter = postgresPlayerAdapter;
+        this.postgresFixtureAdapter = postgresFixtureAdapter;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -48,6 +52,10 @@ public class FplDataSyncService {
             var players = fplApiClient.fetchPlayers();
             postgresPlayerAdapter.saveAll(players);
             log.info("Synced {} players.", players.size());
+
+            var fixtures = fplApiClient.fetchFixtures();
+            postgresFixtureAdapter.saveAll(fixtures);
+            log.info("Synced {} fixtures.", fixtures.size());
 
             log.info("Data sync completed successfully.");
         } catch (Exception e) {
