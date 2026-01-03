@@ -23,9 +23,9 @@ public record PlayerResponse(
         );
     }
 
-    private static String mapPosition(int type) {
+    public static String mapPosition(int type) {
         return switch (type) {
-            case 1 -> "GK";
+            case 1 -> "GKP";
             case 2 -> "DEF";
             case 3 -> "MID";
             case 4 -> "FWD";
