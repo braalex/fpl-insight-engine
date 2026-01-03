@@ -18,6 +18,7 @@ public record Player(
         int assists,
         int clean_sheets,            // GK/DEF only
         String status,               // "a" (available), "u" (unavailable), "d" (doubtful)
+        Integer chance_of_playing_next_round,
         String news
 ) {
 }

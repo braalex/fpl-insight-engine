@@ -44,6 +44,7 @@ public class PostgresPlayerAdapter {
                             p.assists(),
                             p.clean_sheets(),
                             p.status(),
+                            p.chance_of_playing_next_round(),
                             p.news()
                     );
                 })

@@ -58,6 +58,9 @@ public class PlayerEntity {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "chance_of_playing_next_round")
+    private Integer chanceOfPlayingNextRound;
+
     @Column(name = "news")
     private String news;
 
@@ -69,7 +72,7 @@ public class PlayerEntity {
                         Double selectedByPercent, Integer totalPoints, Double form,
                         Integer transfersIn, Integer transfersOut, Integer minutes,
                         Integer goalsScored, Integer assists, Integer cleanSheets,
-                        String status, String news) {
+                        String status, Integer chanceOfPlayingNextRound, String news) {
         this.id = id;
         this.firstName = firstName;
         this.secondName = secondName;
@@ -87,6 +90,7 @@ public class PlayerEntity {
         this.assists = assists;
         this.cleanSheets = cleanSheets;
         this.status = status;
+        this.chanceOfPlayingNextRound = chanceOfPlayingNextRound;
         this.news = news;
     }
 
@@ -156,6 +160,10 @@ public class PlayerEntity {
 
     public String getStatus() {
         return status;
+    }
+
+    public Integer getChanceOfPlayingNextRound() {
+        return chanceOfPlayingNextRound;
     }
 
     public String getNews() {

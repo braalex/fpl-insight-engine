@@ -48,7 +48,11 @@ public class FplInsightService {
                     double difficulty = difficultyMap.get(p.getTeam().getId());
                     double form = p.getForm();
                     double fixtureBonus = (5.0 - difficulty);
-                    double rating = (form * 0.7) + (fixtureBonus * 0.3);
+                    double rawScore = (form * 0.7) + (fixtureBonus * 0.3);
+
+                    int chance = p.getChanceOfPlayingNextRound() == null ? 100 : p.getChanceOfPlayingNextRound();
+                    double availabilityFactor = chance / 100.0;
+                    double transferRating = rawScore * availabilityFactor;
 
                     return new PlayerInsightDto(
                             p.getId(),
@@ -57,7 +61,7 @@ public class FplInsightService {
                             mapPosition(p.getElementType()),
                             form,
                             difficulty,
-                            rating
+                            transferRating
                     );
                 })
                 .sorted(Comparator.comparing(PlayerInsightDto::transferRating).reversed())

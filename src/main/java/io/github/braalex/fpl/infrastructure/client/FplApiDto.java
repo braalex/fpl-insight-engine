@@ -41,6 +41,7 @@ public class FplApiDto {
             int assists,
             int clean_sheets,
             String status,
+            Integer chance_of_playing_next_round,
             String news
     ) {
     }
