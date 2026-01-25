@@ -24,4 +24,10 @@ public class PlayerInsightController {
             @RequestParam(defaultValue = "10") int limit) {
         return insightService.getRecommendedTransfers(limit);
     }
+
+    @GetMapping("/undervalued")
+    public List<PlayerInsightDto> getUndervaluedPlayers(
+            @RequestParam(defaultValue = "10") int limit) {
+        return insightService.getUndervaluedPlayers(limit);
+    }
 }

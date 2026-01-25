@@ -1,6 +1,7 @@
 package io.github.braalex.fpl.application.service;
 
 import io.github.braalex.fpl.application.dto.PlayerInsightDto;
+import io.github.braalex.fpl.infrastructure.persistence.entity.PlayerEntity;
 import io.github.braalex.fpl.infrastructure.persistence.entity.TeamEntity;
 import io.github.braalex.fpl.infrastructure.persistence.repository.PlayerJpaRepository;
 import io.github.braalex.fpl.infrastructure.persistence.repository.TeamJpaRepository;
@@ -28,24 +29,32 @@ public class FplInsightService {
         this.fixtureService = fixtureService;
     }
 
-    public List<PlayerInsightDto> getRecommendedTransfers(int limit) {
+    private record FplContext(
+            List<PlayerEntity> players,
+            Map<Integer, String> teamNames,
+            Map<Integer, Double> difficulties
+    ) {
+    }
+
+    private FplContext buildContext() {
         var players = playerRepository.findAll();
         var teams = teamRepository.findAll();
-        Map<Integer, Double> difficultyMap = teams.stream()
+        var teamNames = teams.stream()
+                .collect(Collectors.toMap(TeamEntity::getId, TeamEntity::getName));
+        var difficulties = teams.stream()
                 .collect(Collectors.toMap(
                         TeamEntity::getId,
-                        t -> fixtureService.getNext5Difficulty(t.getId())
-                ));
+                        t -> fixtureService.getNext5Difficulty(t.getId())));
 
-        Map<Integer, String> teamNames = teams.stream()
-                .collect(Collectors.toMap(
-                        TeamEntity::getId,
-                        TeamEntity::getName
-                ));
+        return new FplContext(players, teamNames, difficulties);
+    }
 
-        return players.stream()
+    public List<PlayerInsightDto> getRecommendedTransfers(int limit) {
+        var context = buildContext();
+
+        return context.players.stream()
                 .map(p -> {
-                    double difficulty = difficultyMap.get(p.getTeam().getId());
+                    double difficulty = context.difficulties.get(p.getTeam().getId());
                     double form = p.getForm();
                     double fixtureBonus = (5.0 - difficulty);
                     double rawScore = (form * 0.7) + (fixtureBonus * 0.3);
@@ -54,18 +63,48 @@ public class FplInsightService {
                     double availabilityFactor = chance / 100.0;
                     double transferRating = rawScore * availabilityFactor;
 
-                    return new PlayerInsightDto(
-                            p.getId(),
-                            p.getWebName(),
-                            teamNames.get(p.getTeam().getId()),
-                            mapPosition(p.getElementType()),
-                            form,
-                            difficulty,
-                            transferRating
-                    );
+                    return createDto(p, context, difficulty, transferRating);
                 })
                 .sorted(Comparator.comparing(PlayerInsightDto::transferRating).reversed())
                 .limit(limit)
                 .toList();
+    }
+
+    public List<PlayerInsightDto> getUndervaluedPlayers(int limit) {
+        var context = buildContext();
+
+        return context.players.stream()
+                .filter(p -> p.getMinutes() >= 300)
+                .filter(p -> {
+                    int chance = p.getChanceOfPlayingNextRound() == null ? 100 : p.getChanceOfPlayingNextRound();
+                    return chance >= 75;
+                })
+                .map(p -> {
+                    double realPrice = p.getNowCost() / 10.0;
+                    double valueScore = p.getTotalPoints() / realPrice;
+                    double difficulty = context.difficulties.get(p.getTeam().getId());
+
+                    return createDto(p, context, difficulty, valueScore);
+                })
+                .sorted(Comparator.comparing(PlayerInsightDto::transferRating).reversed())
+                .limit(limit)
+                .toList();
+    }
+
+    private PlayerInsightDto createDto(PlayerEntity p, FplContext context, double difficulty, double rating) {
+        return new PlayerInsightDto(
+                p.getId(),
+                p.getWebName(),
+                context.teamNames.get(p.getTeam().getId()),
+                mapPosition(p.getElementType()),
+                p.getNowCost() / 10.0,
+                p.getForm(),
+                round(difficulty),
+                round(rating)
+        );
+    }
+
+    private double round(double value) {
+        return Math.round(value * 10.0) / 10.0;
     }
 }

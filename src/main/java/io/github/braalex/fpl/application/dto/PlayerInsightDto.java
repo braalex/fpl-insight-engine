@@ -5,6 +5,7 @@ public record PlayerInsightDto(
         String name,
         String teamName,
         String position,
+        double price,
         double form,
         double difficultyRating,
         double transferRating
