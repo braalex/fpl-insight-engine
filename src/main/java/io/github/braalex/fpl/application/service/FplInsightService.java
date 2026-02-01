@@ -79,6 +79,7 @@ public class FplInsightService {
                     int chance = p.getChanceOfPlayingNextRound() == null ? 100 : p.getChanceOfPlayingNextRound();
                     return chance >= 75;
                 })
+                .filter(p -> p.getForm() >= 3.0)
                 .map(p -> {
                     double realPrice = p.getNowCost() / 10.0;
                     double valueScore = p.getTotalPoints() / realPrice;
